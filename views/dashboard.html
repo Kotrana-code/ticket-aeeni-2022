@@ -32,14 +32,14 @@
 			        <option value="M1IG">M1 IG</option>
 			      </select>
 			    </div>
-		    <input onkeyup="verifInputIM(event)" type="text" class="form-control" id="im" aria-describedby="emailHelp" placeholder="Rechercher matricule ...">
-		    <input onkeyup="verifInputNom(event)" type="text" class="form-control" style="margin-top: 10px;" id="nom" aria-describedby="emailHelp" placeholder="Rechercher nom ...">
+		    <input onkeyup="verifInputIM(event)"  type="text" class="form-control" id="im" aria-describedby="emailHelp" placeholder="Rechercher matricule ...">
+		    <input onkeyup="verifInputNom(event)"  type="text" class="form-control" style="margin-top: 10px;" id="nom" aria-describedby="emailHelp" placeholder="Rechercher nom ...">
 		  </div>
-		  <button onclick="getEtudiant()"  type="button" class="btn btn-primary">Rechercher</button>
+		  <button onclick="getEtudiant()" id="rechercher" type="button" class="btn btn-primary">Rechercher</button>
 		</form>
 
-		<div  class="list-group result">
-
+		<div  class="list-group result" style="text-align: center;">
+			
 		</div>
 	</div>
    <!--  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
@@ -54,13 +54,18 @@
 	let url_api = "https://ticket-aeeni-2022.herokuapp.com/";
 
 	function getEtudiant() {
-		$(".list-group").html('<div></div>');
 		let im = $("#im").val();
 		let nom = $("#nom").val();
 		let classeEni = $("#classeEni").val();
 		// alert(classeEni);
+	 if( im == "" && nom == ""){
+	 	alert("Veillez entrer le nom ou im");
+	 	return;
+	 }
+	  $("#rechercher").prop('disabled', true);
+		$(".list-group").html('<div id="spinner" class="show bg-white position-fixed translate-middle d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
 		if(im == ""){
-			 $.ajax
+					 $.ajax
                     ({
                         type: "GET",
                         url: url_api + "api/get_etudiant/nom/"+nom+"/"+classeEni,
@@ -70,9 +75,12 @@
 	                            	if(element.accepted == 0){
 	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button class="btn btn-primary btnAccepted">Accepter </button></div></div>');
 	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            		$(".btnAccepted").attr('id', element.id);
 	                            	}else{
 	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat de recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button  class="btn btn-danger" disabled>Déjà passé</button></div></div>');
 	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            		$(".btnAccepted").attr('id', element.id);
+	                            		
 	                            	}
 
 	                             })
@@ -80,6 +88,8 @@
 	                        }else{
 	                        		$(".list-group").append('<div class="alert alert-warning" role="alert">Pas d\'enregistrement</div>');
 	                        }
+	                         $("#rechercher").prop('disabled', false);
+        					$("#im").prop('disabled', false);
                         },
                         error: function (err) {
                             console.log("err ", err);
@@ -96,15 +106,23 @@
 	                            	if(element.accepted == 0){
 	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button class="btn btn-primary btnAccepted">Accepter </button></div></div>');
 	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            		$(".btnAccepted").attr('id', element.id);
+
 	                            	}else{
 	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat de recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button  class="btn btn-danger" disabled>Déjà passé </button></div></div>');
 	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            		$(".btnAccepted").attr('id', element.id);
+
 	                            	}
 	                            	$("#im").val('');
 	                             })
 	                        }else{
 	                        	$(".list-group").append('<div class="alert alert-warning" role="alert">Pas d\'enregistrement</div>');
 	                        }
+	                         $("#rechercher").prop('disabled', false);
+        					$("#nom").prop('disabled', false);
+
+
                         },
                         error: function (err) {
                             console.log("err ", err);
@@ -136,12 +154,18 @@
         	}
 
         	function updateAccepted(idDocument){
+
+        		 $("#"+idDocument).prop('disabled', true);
+        		 $("#"+idDocument).text("Loading ...") ;
+        		// alert(idDocument);
+          		// document.getElementById("."+idDocument).textContent = "This is some text";
 				$.ajax
                 ({
                     type: "PUT",
                     url: url_api + "api/update/"+idDocument,
                     success: function (result) {
-                        console.log(result);
+                        $("#"+idDocument).text("Confirmer") ;
+        				$("#"+idDocument).prop('disabled', true);
                     },
                     error: function (err) {
                         console.log("err ", err);
@@ -151,12 +175,11 @@
 
         	function verifInputIM(e) {
         		console.log($("#im").val().length)
- e.preventDefault();
+ 				e.preventDefault();
         		if($("#im").val().length != 0){
         			$("#nom").prop('disabled', true);
         		}else{
         			$("#nom").prop('disabled', false);
-
         		}
         	}
 
