@@ -1,0 +1,34 @@
+{
+  "name": "ticket_reception_eni",
+  "version": "1.0.0",
+  "description": "Ticket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/umbra-dev/ticket_reception_eni.git"
+  },
+  "keywords": [
+    "Umbra"
+  ],
+  "author": "Umbra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/umbra-dev/ticket_reception_eni/issues"
+  },
+  "homepage": "https://github.com/umbra-dev/ticket_reception_eni#readme",
+"dependencies": {
+   "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "^4.17.3",
+    "firebase-admin": "^10.0.2",
+    "http-errors": "~1.6.3",
+    "moment": "^2.29.1",
+    "morgan": "~1.9.1",
+    "pug": "2.0.0-beta11",
+    "request": "^2.88.2"
+  }
+}

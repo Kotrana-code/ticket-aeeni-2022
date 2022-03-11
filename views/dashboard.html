@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Dashboard</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+	<div class="container" style="padding-top: 20px;">
+		<input type="text" name="im" id="im" title="Rechercher etudiant avec im" placeholder="Rechercher avec im">
+		<input type="text" name="nom" id="nom" title="Rechercher etudiant avec nom" placeholder="Recherche avec nom">
+		<div class="result-recherche">
+			
+		</div>
+		<button onclick="getEtudiant()">Get</button>
+		<!-- <button onclick="addEtudiant()">POst</button> -->
+	</div>
+   <!--  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- <script src="http://localhost:3000/js/bootstrap-datetimepicker.min.js"></script> -->
+<script type="text/javascript">
+	let url_api = "http://localhost:3000/";
+
+	function getEtudiant() {
+		$(".result-recherche").html('<div></div>');
+		let im = $("#im").val();
+		let nom = $("#nom").val();
+		if(im == ""){
+			 $.ajax
+                    ({
+                        type: "GET",
+                        url: url_api + "api/get_etudiant/nom/"+nom,
+                        success: function (result) {
+                            if (result.data.length > 0) {
+	                            result.data.forEach(element => {
+	                            	console.log(element);
+	                            	$(".result-recherche").append('<div>Im = '+element.im+' nom = '+element.nom+' accepter = '+element.accepted+'</div><br>');
+	                             })
+	                             $("#im").val('');
+								 $("#nom").val('');
+	                        }else{
+	                        	$(".result-recherche").append('<div>NO result</div>');
+	                        }
+                        },
+                        error: function (err) {
+                            console.log("err ", err);
+                        }
+                    });
+		}else{
+                $.ajax
+                    ({
+                        type: "GET",
+                        url: url_api + "api/get_etudiant/im/"+im,
+                        success: function (result) {
+                            if (result.data.length > 0) {
+	                            result.data.forEach(element => {
+	                            	console.log(element);
+	                            	$(".result-recherche").append('<div>Im = '+element.im+' || nom = '+element.nom+' || accepter = '+element.accepted+'</div><br>');
+	                            	 $("#im").val('');
+									$("#nom").val('');
+	                             })
+	                        }else{
+	                        	$(".result-recherche").append('<div>NO result</div>');
+	                        }
+                        },
+                        error: function (err) {
+                            console.log("err ", err);
+                        }
+                    });
+            }
+           
+            
+        }
+
+        function addEtudiant() {
+			let im = "34";
+			let nom ="johny LIno";
+            $.ajax
+                ({
+                    type: "POST",
+                    url: url_api + "/add/etudiant",
+                    data: {
+						"im": im,
+						"nom": nom
+					},
+                    success: function (result) {
+                        console.log(result);
+                    },
+                    error: function (err) {
+                        console.log("err ", err);
+                    }
+                });
+        	}
+</script>
+
+</body>
+</html>
