@@ -18,8 +18,7 @@
 		  <div class="form-group">
 		  	 <div class="form-group col-md-4">
 			      <label for="classeEni">Classe</label>
-			      <select id="classeEni" class="form-control">
-			        <option selected>Choose...</option>
+			      <select id="classeEni" class="form-control" value="L1IG20">
 			        <option value="L1IG20">L1 IG 2020</option>
 			        <option value="L1PRO20">L1 PRO 2020</option>
 			        <option value="L1IGGP1">L1 IG Groupe 1</option>
@@ -63,7 +62,7 @@
 	 	return;
 	 }
 	  $("#rechercher").prop('disabled', true);
-		$(".list-group").html('<div id="spinner" class="show bg-white position-fixed translate-middle d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+		$(".list-group").html('<div id="spinner" class="show bg-white position-fixed translate-middle d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status" style="text-align: center;"><span class="sr-only">Loading...</span></div></div>');
 		if(im == ""){
 					 $.ajax
                     ({
