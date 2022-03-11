@@ -5,16 +5,42 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Dashboard</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<style type="text/css">
+		.result{
+			margin-top: 10px;
+		}
+	</style>
 </head>
 <body>
-	<div class="container" style="padding-top: 20px;">
-		<input type="text" name="im" id="im" title="Rechercher etudiant avec im" placeholder="Rechercher avec im">
-		<input type="text" name="nom" id="nom" title="Rechercher etudiant avec nom" placeholder="Recherche avec nom">
-		<div class="result-recherche">
-			
+	<div class="container" style="padding-top: 20px;">	
+
+		 <form>
+		  <div class="form-group">
+		  	 <div class="form-group col-md-4">
+			      <label for="classeEni">Classe</label>
+			      <select id="classeEni" class="form-control">
+			        <option selected>Choose...</option>
+			        <option value="L1IG20">L1 IG 2020</option>
+			        <option value="L1PRO20">L1 PRO 2020</option>
+			        <option value="L1IGGP1">L1 IG Groupe 1</option>
+			        <option value="L1IGGP2">L1 IG Groupe 2</option>
+			        <option value="L1PROGP1">L1 PRO Groupe 1</option>
+			        <option value="L1PROGP2">L1 PRO Groupe 2</option>
+			        <option value="L2SR">L2 SR</option>
+			        <option value="L2GB">L2 GB</option>
+			        <option value="L2IG">L2 IG</option>
+			        <option value="M1IG">M1 IG</option>
+			      </select>
+			    </div>
+		    <input onkeyup="verifInputIM(event)" type="text" class="form-control" id="im" aria-describedby="emailHelp" placeholder="Rechercher matricule ...">
+		    <input onkeyup="verifInputNom(event)" type="text" class="form-control" style="margin-top: 10px;" id="nom" aria-describedby="emailHelp" placeholder="Rechercher nom ...">
+		  </div>
+		  <button onclick="getEtudiant()"  type="button" class="btn btn-primary">Rechercher</button>
+		</form>
+
+		<div  class="list-group result">
+
 		</div>
-		<button onclick="getEtudiant()">Get</button>
-		<!-- <button onclick="addEtudiant()">POst</button> -->
 	</div>
    <!--  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -24,28 +50,35 @@
 
 <!-- <script src="http://localhost:3000/js/bootstrap-datetimepicker.min.js"></script> -->
 <script type="text/javascript">
-	// let url_api = "http://localhost:3000/";
-	let url_api = "https://ticket-aeeni-2022.herokuapp.com/";
+	let url_api = "http://localhost:3000/";
+	// let url_api = "https://ticket-aeeni-2022.herokuapp.com/";
 
 	function getEtudiant() {
-		$(".result-recherche").html('<div></div>');
+		$(".list-group").html('<div></div>');
 		let im = $("#im").val();
 		let nom = $("#nom").val();
+		let classeEni = $("#classeEni").val();
+		// alert(classeEni);
 		if(im == ""){
 			 $.ajax
                     ({
                         type: "GET",
-                        url: url_api + "api/get_etudiant/nom/"+nom,
+                        url: url_api + "api/get_etudiant/nom/"+nom+"/"+classeEni,
                         success: function (result) {
                             if (result.data.length > 0) {
 	                            result.data.forEach(element => {
-	                            	console.log(element);
-	                            	$(".result-recherche").append('<div>Im = '+element.im+' nom = '+element.nom+' accepter = '+element.accepted+'</div><br>');
+	                            	if(element.accepted == 0){
+	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button class="btn btn-primary btnAccepted">Accepter </button></div></div>');
+	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            	}else{
+	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat de recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button  class="btn btn-danger" disabled>Déjà passé</button></div></div>');
+	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            	}
+
 	                             })
-	                             $("#im").val('');
 								 $("#nom").val('');
 	                        }else{
-	                        	$(".result-recherche").append('<div>NO result</div>');
+	                        		$(".list-group").append('<div class="alert alert-warning" role="alert">Pas d\'enregistrement</div>');
 	                        }
                         },
                         error: function (err) {
@@ -56,17 +89,21 @@
                 $.ajax
                     ({
                         type: "GET",
-                        url: url_api + "api/get_etudiant/im/"+im,
+                        url: url_api + "api/get_etudiant/im/"+im+"/"+classeEni,
                         success: function (result) {
                             if (result.data.length > 0) {
 	                            result.data.forEach(element => {
-	                            	console.log(element);
-	                            	$(".result-recherche").append('<div>Im = '+element.im+' || nom = '+element.nom+' || accepter = '+element.accepted+'</div><br>');
-	                            	 $("#im").val('');
-									$("#nom").val('');
+	                            	if(element.accepted == 0){
+	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button class="btn btn-primary btnAccepted">Accepter </button></div></div>');
+	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            	}else{
+	                            		$(".list-group").append('<div class="card"><div class="card-header">Resultat de recherche</div><div class="card-body"><h5 class="card-title">Numéro matricule : '+element.im+ '</h5><p class="card-text">'+element.firstname+'</p><button  class="btn btn-danger" disabled>Déjà passé </button></div></div>');
+	                            		$(".btnAccepted").attr('onclick', "updateAccepted('"+element.id+"')");
+	                            	}
+	                            	$("#im").val('');
 	                             })
 	                        }else{
-	                        	$(".result-recherche").append('<div>NO result</div>');
+	                        	$(".list-group").append('<div class="alert alert-warning" role="alert">Pas d\'enregistrement</div>');
 	                        }
                         },
                         error: function (err) {
@@ -96,6 +133,42 @@
                         console.log("err ", err);
                     }
                 });
+        	}
+
+        	function updateAccepted(idDocument){
+				$.ajax
+                ({
+                    type: "PUT",
+                    url: url_api + "api/update/"+idDocument,
+                    success: function (result) {
+                        console.log(result);
+                    },
+                    error: function (err) {
+                        console.log("err ", err);
+                    }
+                });
+        	}
+
+        	function verifInputIM(e) {
+        		console.log($("#im").val().length)
+ e.preventDefault();
+        		if($("#im").val().length != 0){
+        			$("#nom").prop('disabled', true);
+        		}else{
+        			$("#nom").prop('disabled', false);
+
+        		}
+        	}
+
+        	function verifInputNom(e) {
+        		 e.preventDefault();
+        		console.log($("#nom").val().length)
+        		if($("#nom").val().length != 0){
+        			$("#im").prop('disabled', true);
+        		}else{
+        			// $("#nom").prop('disabled', false);
+        			$("#im").prop('disabled', false);
+        		}
         	}
 </script>
 
