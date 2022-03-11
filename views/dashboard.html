@@ -174,7 +174,7 @@
         	}
 
         	function verifInputIM(e) {
-        		console.log($("#im").val().length)
+        		$("#nom").val("");
  				e.preventDefault();
         		if($("#im").val().length != 0){
         			$("#nom").prop('disabled', true);
@@ -185,7 +185,7 @@
 
         	function verifInputNom(e) {
         		 e.preventDefault();
-        		console.log($("#nom").val().length)
+        	     $("#im").val("")
         		if($("#nom").val().length != 0){
         			$("#im").prop('disabled', true);
         		}else{
